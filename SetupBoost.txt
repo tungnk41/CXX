@@ -1,0 +1,2 @@
+bootstrap.bat
+b2 --build-dir=Build\x64 address-model=64 threading=multi --stagedir=C:\boost --toolset=gcc -j 12 link=shared runtime-link=shared --variant=debug,release
