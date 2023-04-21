@@ -4,49 +4,49 @@
 class A {
     private:
         int* i;
-        void swapDataWith(A a) {
-            //    int* temp = i;
-            //    i = a.i;
-            //    a.i = temp;
-            std::swap(i,a.i);
-        }
     public:
         A() {
-            std::cout << "A()" << std::endl;
+            std::cout << "Default constructor" << std::endl;
         };
         A(int v) {
-            std::cout << "A(int v)" << std::endl;
+            std::cout << "Param constructor" << std::endl;
             i = new int;
             *i = v;
         };
-        A(const A &a){ //copy constructor
-            std::cout << "A(const A &a)" << std::endl;
+        A(const A& a){ //copy constructor
+            std::cout << "Copy constructor" << std::endl;
             i = new int;
             *i = *a.i;
         };
-        A(A &&a){ //move constructor
-         std::cout << "A(A &&a)" << std::endl;
-           swapDataWith(a);
+        A(A&& a){ //move constructor
+         std::cout << "Move constructor" << std::endl;
+           this->i = a.i;
+           a.i = nullptr;
         };
 
         // copy assignment operator
-        A& operator=(const A &rhs) {
-            if (&rhs != this) {
-                A temp(rhs); // copy object data
-                temp.swapDataWith(*this);
+        A& operator=(const A& other) {
+            if (this != &other) {
+                if(this->i == nullptr) {
+                    this->i = new int;
+                }
+                this->i = other.i;
             }
             return *this;
         }
 
         // move assignment operator
-        A& operator=(A &&rhs) {
-            A temp(std::move(rhs)); // move object data
-            temp.swapDataWith(*this);
+        A& operator=(A&& other) {
+           if (this != &other) {
+                A(other);
+            }
             return *this;
         }
 
         void print() {
-            std::cout<<*i<<std::endl;
+            if(i != nullptr) {
+                std::cout<<*i<<std::endl;
+            }
         }
         virtual ~A() {
             delete i;
@@ -55,10 +55,12 @@ class A {
 
 int main()
 {
-    A a(1);
-    A b(a);
+    A a(2);
+    A b(3);
+    A c = std::move(b);
     a.print();
     b.print();
+    c.print();
 
     return 0;
 }
