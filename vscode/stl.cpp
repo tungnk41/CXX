@@ -38,7 +38,7 @@ int main() {
 
 
     /*Set : TreeSet*/
-    set<int> s;
+    set<int> s1;
     //set.insert(x), set.erase(x), set.count(x)  => logN, s.clear(), s.size()
     //s.find() : Iterator, s.lower_bound(x): iterator first element which >= x, s.upper_bound(x): iterator first element which > x
 
