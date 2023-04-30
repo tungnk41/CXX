@@ -24,14 +24,17 @@ public:
 };
 
 int value = 0;
+std::mutex m;
 
 void increase(int &v)
 {
+    m.lock();
     int t = MAX;
     while (t-- > 0)
     {
         v += 1;
     }
+    m.unlock();
 }
 
 void decrease(int &v)
@@ -48,14 +51,12 @@ void createThreadTest()
     A object{1};
     std::thread t1(increase, std::ref(value));
     std::thread t2(decrease, std::ref(value));
-    std::thread t3([](int &v)
-                   {
+    std::thread t3([](int &v){
             int t = MAX;
             while(t-- > 0) {
                 v += 150;
                 std::this_thread::sleep_for(chrono::seconds(1));
-            } },
-                   std::ref(value));
+            } },std::ref(value));
     std::thread t4(A::run, object, value);
 
     t1.join();
