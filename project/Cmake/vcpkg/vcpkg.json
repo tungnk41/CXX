@@ -1,0 +1,9 @@
+{
+    "name": "vcpkg-test",
+    "version": "0.0.1",
+    "dependencies": [
+      {
+        "name" : "fmt"
+      }
+    ]
+  }
