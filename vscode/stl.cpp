@@ -31,6 +31,7 @@ void _pair() {
     // p.first, p.second
 }
 void _iterator() {
+    vector<int> v;
     /*Iterator*/
     vector<int>::iterator it = v.begin();
     auto it2 = v.begin();

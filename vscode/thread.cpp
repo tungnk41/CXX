@@ -5,6 +5,8 @@
 
 using namespace std;
 #define MAX 10000
+std::mutex mx;
+int value = 0;
 
 class A
 {
@@ -23,22 +25,20 @@ public:
     }
 };
 
-int value = 0;
-std::mutex m;
-
 void increase(int &v)
 {
-    m.lock();
+    std::unique_lock<mutex> locker(mx);
     int t = MAX;
     while (t-- > 0)
     {
         v += 1;
     }
-    m.unlock();
+    locker.unlock();
 }
 
 void decrease(int &v)
 {
+    std::lock_guard<mutex> locker(mx);
     int t = MAX;
     while (t-- > 0)
     {
@@ -66,7 +66,7 @@ void createThreadTest()
         // Neu thread join 2 lan se lam chuong trinh bi terminate
     }
     if(t2.joinable()) {
-        t2.detach();
+        t2.join();
     }
     t3.join();
     t4.join();
@@ -74,13 +74,38 @@ void createThreadTest()
     cout << value << endl;
 }
 
+
+std::exception_ptr gException = nullptr;
+void handleThreadException() {
+    try
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        throw std::runtime_error("Catch me in MAIN");
+    }
+    catch (...)
+    {
+        //Set the global exception pointer in case of an exception
+        gException = std::current_exception();
+    }
+
+    /* in Main
+        std::thread t1
+        t1.join
+        if(gException) {
+            handle exception
+        }
+    */
+}
+
 int main()
 {
     auto start = std::chrono::high_resolution_clock::now();
-
-    createThreadTest();
+    // createThreadTest();
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+    int totalCurrencyThread = std::thread::hardware_concurrency();
+    std::cout << totalCurrencyThread <<std::endl;
 
     return 0;
 }
