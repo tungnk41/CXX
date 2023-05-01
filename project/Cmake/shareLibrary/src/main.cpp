@@ -1,4 +1,5 @@
-#include "../include/share.h"
+// #include "../include/share.h"
+#include <share.h>
 
 int main() {
     print();
