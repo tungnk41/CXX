@@ -1,9 +1,4 @@
 {
-    "name": "vcpkg-test",
-    "version": "0.0.1",
-    "dependencies": [
-      {
-        "name" : "fmt"
-      }
-    ]
+    "name": "share-lib-test",
+    "version": "0.0.1"
   }
