@@ -26,6 +26,14 @@ void print(T n) {
     std::cout << n; 
 }
 
+
+#include <type_traits>
+template <typename T>
+T square(T x) {
+    static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
+    return x * x;
+}
+
 int main() {
 
     Object<std::string> o("1");
@@ -33,5 +41,7 @@ int main() {
 
     print<int>(6);
 
+    square<std::string>("a");
+    
     return 0;
 }

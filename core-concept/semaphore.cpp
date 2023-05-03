@@ -3,6 +3,7 @@
 #include <mutex>
 #include <condition_variable>
 
+//It works by allowing a limited number of processes or threads to access a shared resource at any given time.
 class Semaphore {
 private:
     int count;
