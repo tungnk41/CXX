@@ -14,6 +14,8 @@ class Object {
         void print() {
             std::cout << obj;
         }
+        template<class M>
+        void setData(M data);
 };
 
 template<class T>
@@ -25,6 +27,10 @@ template<class T>
 void print(T n) {
     std::cout << n; 
 }
+
+template<class T>
+template<class M>
+void Object<T>::setData(M data){};
 
 
 #include <type_traits>
