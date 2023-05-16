@@ -9,7 +9,7 @@ void Pipe::create(int type){
         createReader();
     }
     else {
-        createWriter();
+        createSender();
     }
 };
 
@@ -29,15 +29,15 @@ void Pipe::createReader(){
     }
 };
 
-void Pipe::createWriter(){
-    cout << "Pipe::createWriter" <<endl;
+void Pipe::createSender(){
+    cout << "Pipe::createSender" <<endl;
     std::string buff;
     int fd;
     while(1) {
         std::cin >> buff;
         fd = open(pipefifo.c_str(),O_WRONLY);
         write(fd, buff.c_str(), buff.length());
-        cout <<"Writer: " <<buff<<endl;
+        cout <<"Sender: " <<buff<<endl;
         close(fd);
     }
 };
@@ -46,7 +46,7 @@ void Pipe::test() {
     Pipe pipe;
     int type;
 
-    cout << "1: Reader "<<endl<<"2: Writer"<<endl;
+    cout << "1: Reader "<<endl<<"2: Sender"<<endl;
     cin >> type;
     pipe.create(type);
 }

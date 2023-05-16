@@ -17,7 +17,7 @@
             std::string pipefifo = "/tmp/pipefifo";  
             void createFifo();
             void createReader();
-            void createWriter();
+            void createSender();
         public:
             Pipe() {
                 createFifo();

@@ -1,10 +1,12 @@
 #include <main.h>
 #include <upipe.h>
 #include <pipe.h>
+#include <mq.h>
+#include <shm.h>
 
 int main() {
  
-  Pipe pipe;
-  pipe.test();
+  ShareMemory shm;
+  shm.test();
   return 0;
 }
