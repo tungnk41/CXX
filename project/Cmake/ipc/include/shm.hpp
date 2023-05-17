@@ -7,6 +7,8 @@
     #include <sys/shm.h>
     using namespace std;
 
+    #define SHM_SIZE 4096*2 //pagesize is 4096
+
     class ShareMemory {
         private:
         key_t key;

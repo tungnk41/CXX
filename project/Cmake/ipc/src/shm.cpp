@@ -2,7 +2,9 @@
 
 
 void ShareMemory::getShareMemSegment(){
-    shmid = shmget(key,1024,0666|IPC_CREAT);
+    //   cout << getpagesize() <<endl;
+    // shmget takes multiple of pagesize
+    shmid = shmget(key,SHM_SIZE,0666|IPC_CREAT);
 };
 
 char* ShareMemory::attach(){
@@ -16,13 +18,14 @@ void ShareMemory::detach(char* str){
 void ShareMemory::write(){
     getShareMemSegment();
     std::string s = "abc";
-    char* data = (char*) shmat(shmid,(void*)0,0);;
+    char* data = (char*) shmat(shmid,(void*)0,0);
+    memset(data, 0, SHM_SIZE);
     std::strcpy(data, s.c_str());
     cout <<"write: " <<data<<endl;
 };
 
 void ShareMemory::read(){
-    char* data = (char*) shmat(shmid,(void*)0,0);;
+    char* data = (char*) shmat(shmid,(void*)0,0);
     cout <<"Read Share mem: " << data <<endl;
 };
 

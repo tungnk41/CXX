@@ -1,7 +1,7 @@
 #ifndef _SIGNAL_HPP_
 #define _SIGNAL_HPP_
     #include <iostream>
-    #include <csignal>
+    #include <signal.h>
     #include <unistd.h>
 
     using std::cout;
@@ -11,9 +11,9 @@
     private:
         
     public:
-       void signalHandler(int signalID);
-       void sendSignal(int signalID);
+       void sendSignal(pid_t pid, int signalID);
        pid_t getProcessID();
-       void registerSignal(int signalID);
+       void registerSignal(pid_t pid,int signalID);
+       void run();
     };
 #endif
