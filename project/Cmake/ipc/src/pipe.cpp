@@ -42,7 +42,7 @@ void Pipe::createSender(){
     }
 };
 
-void Pipe::test() {
+void Pipe::run() {
     Pipe pipe;
     int type;
 

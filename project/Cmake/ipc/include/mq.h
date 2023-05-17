@@ -5,6 +5,7 @@
     #include <cstring>
     #include <sys/ipc.h>
     #include <sys/msg.h>
+    #include <thread>
 
     #define BUFFER_SIZE 256
     using std::cout;
@@ -20,8 +21,6 @@
         private:
             key_t key;
             int msgID;
-            void createReader();
-            void createSender();
         public:
             MessageQueue() {
                 key = ftok("msqueue", 1001); //pathname , projectID
@@ -31,8 +30,9 @@
                  // to destroy the message queue
                 msgctl(msgID, IPC_RMID, NULL);
             }
-            void create(int type);
-            void test();
+            void runReceiver(int id);
+            void runSender(int id);
+            void run();
      
     };
 #endif

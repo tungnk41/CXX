@@ -17,6 +17,6 @@
         void uwrite(std::string msg);
         bool isParentProcess(pid_t pid);
         std::string uread();
-        void test();
+        void run();
     };
 #endif

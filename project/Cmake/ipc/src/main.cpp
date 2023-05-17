@@ -4,9 +4,11 @@
 #include <mq.h>
 #include <shm.h>
 
+
 int main() {
  
-  ShareMemory shm;
-  shm.test();
+  MessageQueue ipc;
+  ipc.run();
+
   return 0;
 }

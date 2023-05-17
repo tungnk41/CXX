@@ -26,7 +26,7 @@ void ShareMemory::read(){
     cout <<"Read Share mem: " << data <<endl;
 };
 
-void ShareMemory::test() {
+void ShareMemory::run() {
     write();
     read();
 }

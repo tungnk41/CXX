@@ -23,7 +23,7 @@
                 createFifo();
             };
             void create(int type);
-            void test();
+            void run();
      
     };
 #endif

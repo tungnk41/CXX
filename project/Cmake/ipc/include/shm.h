@@ -24,7 +24,7 @@
             void detach(char* str);
             void write();
             void read();
-            void test();
+            void run();
 
     };
 #endif

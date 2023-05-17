@@ -24,7 +24,7 @@ std::string UPipe::uread() {
     return s;
 };
 
-void UPipe::test() {
+void UPipe::run() {
     createPipe();
     pid_t pid = fork();
     if(isParentProcess(pid)) {
