@@ -1,4 +1,4 @@
-#include <upipe.h>
+#include <upipe.hpp>
 
 int UPipe::createPipe() {
 	return pipe(fd);

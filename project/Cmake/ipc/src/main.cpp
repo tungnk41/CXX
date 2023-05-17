@@ -1,8 +1,8 @@
-#include <main.h>
-#include <upipe.h>
-#include <pipe.h>
-#include <mq.h>
-#include <shm.h>
+#include <main.hpp>
+#include <upipe.hpp>
+#include <pipe.hpp>
+#include <mq.hpp>
+#include <shm.hpp>
 
 
 int main() {

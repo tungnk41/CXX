@@ -12,8 +12,8 @@
     using std::endl;
     using std::cin;
 
-    struct mq_msg {
-        long type;
+    struct Message {
+        long receiveID;
         char data[BUFFER_SIZE];
     };
 

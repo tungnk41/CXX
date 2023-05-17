@@ -1,26 +1,25 @@
-#include <mq.h>
+#include <mq.hpp>
 
-void MessageQueue::runReceiver(int anotherID) {
-    cout<<"runReceiver"<<endl;
+void MessageQueue::runReceiver(int id) {
     std::string buff;
-    mq_msg msg;
-    msg.type = anotherID;
+    Message msg;
+    msg.receiveID = id;
     while(1) {
-         int ret = msgrcv(msgID, &msg, sizeof(msg), msg.type, 0);
+         int ret = msgrcv(msgID, &msg, sizeof(msg), msg.receiveID, 0);
          if(ret != -1) {
-            cout <<"Received: " <<msg.data<<endl;
+            cout <<"Receive: "<<msg.data<<endl;
          }
     }
 };
 
-void MessageQueue::runSender(int anotherID) {
+void MessageQueue::runSender(int id) {
     std::string buff;
-    mq_msg msg;
-    msg.type = anotherID;
+    Message msg;
+    msg.receiveID = id;
     while(1) {
         cin >> buff;
         std::strcpy(msg.data, buff.c_str());
-        cout << "Send: " << msg.data <<endl;
+        cout << "Send: "<<  msg.data <<endl;
         msgsnd(msgID, &msg, sizeof(msg), 0);
 
     }
@@ -29,15 +28,15 @@ void MessageQueue::runSender(int anotherID) {
 void MessageQueue::run() {
     cout <<"Started"<<endl;
     int id = -1;
-    int anotherID = -1;
-    cout <<"create ID: " <<endl;
+    int receiveID = -1;
+    cout <<"ID: ";
     cin >> id;
-    cout <<"communicate with ID: " <<endl;
-    cin >> anotherID;
+    cout <<"Send to ID: ";
+    cin >> receiveID;
     std::thread reader([this](int id){
         runReceiver(id);
     }, id);
     reader.detach();
-    runSender(anotherID);
+    runSender(receiveID);
 
 };

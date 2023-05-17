@@ -1,4 +1,4 @@
-#include <pipe.h>
+#include <pipe.hpp>
 
 void Pipe::createFifo() {
     mkfifo(pipefifo.c_str(), 0666); //permission read & write
