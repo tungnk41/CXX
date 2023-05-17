@@ -6,15 +6,14 @@ void Pipe::createFifo() {
 
 void Pipe::create(int type){
     if(type == 1) {
-        createReader();
+        runReceiver();
     }
     else {
-        createSender();
+        runSender();
     }
 };
 
-void Pipe::createReader(){
-    cout << "Pipe::createReader" <<endl;
+void Pipe::runReceiver(){
     std::string buff;
     int fd;
     char c;
@@ -23,21 +22,20 @@ void Pipe::createReader(){
         while(read(fd,&c,1) > 0) {
             buff.push_back(c);
         }
-        cout <<"Reader: " << buff <<endl;
+        cout <<"Receive: " << buff <<endl;
         buff.clear();
         close(fd);
     }
 };
 
-void Pipe::createSender(){
-    cout << "Pipe::createSender" <<endl;
+void Pipe::runSender(){
     std::string buff;
     int fd;
     while(1) {
         std::cin >> buff;
         fd = open(pipefifo.c_str(),O_WRONLY);
         write(fd, buff.c_str(), buff.length());
-        cout <<"Sender: " <<buff<<endl;
+        cout <<"Send: " <<buff<<endl;
         close(fd);
     }
 };
@@ -46,7 +44,7 @@ void Pipe::run() {
     Pipe pipe;
     int type;
 
-    cout << "1: Reader "<<endl<<"2: Sender"<<endl;
+    cout << "1: Receiver "<<endl<<"2: Sender"<<endl;
     cin >> type;
     pipe.create(type);
 }

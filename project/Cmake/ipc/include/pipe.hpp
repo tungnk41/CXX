@@ -1,5 +1,5 @@
-#ifndef _PIPE_H_
-#define _PIPE_H_
+#ifndef _PIPE_HPP_
+#define _PIPE_HPP_
     #include <iostream>
     #include <unistd.h>
     #include <fcntl.h>
@@ -16,8 +16,8 @@
         private:
             std::string pipefifo = "/tmp/pipefifo";  
             void createFifo();
-            void createReader();
-            void createSender();
+            void runReceiver();
+            void runSender();
         public:
             Pipe() {
                 createFifo();

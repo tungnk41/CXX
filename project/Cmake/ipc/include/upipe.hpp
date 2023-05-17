@@ -1,5 +1,5 @@
-#ifndef _UPIPE_H_
-#define _UPIPE_H_
+#ifndef _UPIPE_HPP_
+#define _UPIPE_HPP_
     #include <iostream>
     #include<unistd.h>
     #include<string>

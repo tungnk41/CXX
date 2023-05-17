@@ -1,5 +1,5 @@
-#ifndef _SHM_H_
-#define _SHM_H_
+#ifndef _SHM_HPP_
+#define _SHM_HPP_
     #include <iostream>
     #include <string>
     #include <cstring>

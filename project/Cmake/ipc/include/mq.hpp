@@ -1,5 +1,5 @@
-#ifndef _MQ_H_
-#define _MQ_H_
+#ifndef _MQ_HPP_
+#define _MQ_HPP_
     #include <iostream>
     #include <string>
     #include <cstring>
