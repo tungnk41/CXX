@@ -1,4 +1,4 @@
-#include <mq.hpp>
+#include <message_queue.hpp>
 
 void MessageQueue::runReceiver(int id) {
     std::string buff;

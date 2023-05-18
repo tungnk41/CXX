@@ -11,7 +11,7 @@ using std::endl;
 
 int main() {
  
-  Signal ipc;
+  MessageQueue ipc;
   ipc.run();
 
   return 0;
