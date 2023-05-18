@@ -77,12 +77,11 @@ void handleSocketConnection(int socketClient){
     int ret = 0;
     bool isDuplicated = false;
     while((ret = recv(socketClient, msg, sizeof(msg),0)) != 0){
-        print(std::string("----> Receive: ").append(msg));
+        print(std::string("Received: ").append(msg));
         std::string receivedData = std::string(msg);
         if(startsWith(receivedData,"[#]")) {
             removePattern(receivedData,"[#]");
             username = receivedData;
-            print(std::string("----> received tranform: ").append(username));
             if(socketClients.count(username) > 0){
                 std::string error_msg = "[!]";
                 send(socketClient, error_msg.c_str(), error_msg.length()+1, 0);
@@ -125,7 +124,7 @@ void sendMessage(const std::string &msg){
 }
 
 void print(std::string msg) {
-    std::cout << msg << std::endl;
+    std::cout <<"Server --->> " << msg << std::endl;
 }
 
 bool startsWith(const std::string& str, const std::string& prefix) {
