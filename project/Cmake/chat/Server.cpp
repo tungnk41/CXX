@@ -142,7 +142,7 @@ void removePattern(std::string& str, const std::string& pattern) {
 }
 
 void handleSignalCtrlZ(int signalID) {
-    print("----> Captured Signal: " + std::to_string(signalID));
+    print("Captured Signal: " + std::to_string(signalID));
     close(::socketServer);
     exit(0);
 }
