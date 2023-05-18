@@ -19,21 +19,18 @@ void sendMessage(const std::string &msg);
 void print(std::string msg);
 bool startsWith(const std::string& str, const std::string& prefix);
 void removePattern(std::string& str, const std::string& pattern);
+void handleSignalCtrlZ(int signalID);
 
-void handleSignalCtrlZ(int socketServer) {
-    close(socketServer);
-    exit(0);
-}
-
+int socketServer = -1;
 int totalClient = 0;
 std::mutex mtx;
 std::unordered_map<std::string, int> socketClients;
 
 int main(int argc,const char **argv,const char **envp){
     Signal sig;
-    sig.registerSignal(sig.getProcessID(),SIGINT,handleSignalCtrlZ);
+    sig.registerSignal(SIGINT,handleSignalCtrlZ);
 
-    int socketServer,socketClient;
+
     struct sockaddr_in serverAddress, clientAddress;
     socklen_t clientAddress_size;
 
@@ -62,13 +59,13 @@ int main(int argc,const char **argv,const char **envp){
 
     while(1){  
         clientAddress_size = sizeof(clientAddress);
-        socketClient = accept(socketServer, (struct sockaddr*)&clientAddress, &clientAddress_size);
+        int socketClient = accept(socketServer, (struct sockaddr*)&clientAddress, &clientAddress_size);
         if (socketClient == -1){
             print("accept failed!");
             exit(1);
         }
-        std::thread th(handleSocketConnection, socketClient);
-        th.detach();
+        std::thread handler(handleSocketConnection, socketClient);
+        handler.detach();
     }
     close(socketServer);
     return 0;
@@ -78,6 +75,7 @@ void handleSocketConnection(int socketClient){
     char msg[BUFFER_SIZE];
     std::string username = "";
     int ret = 0;
+    bool isDuplicated = false;
     while((ret = recv(socketClient, msg, sizeof(msg),0)) != 0){
         print(std::string("----> Receive: ").append(msg));
         std::string receivedData = std::string(msg);
@@ -86,8 +84,9 @@ void handleSocketConnection(int socketClient){
             username = receivedData;
             print(std::string("----> received tranform: ").append(username));
             if(socketClients.count(username) > 0){
-                std::string error_msg = std::string(username) + " exists already. Please quit and enter with another name!";
+                std::string error_msg = "[!]";
                 send(socketClient, error_msg.c_str(), error_msg.length()+1, 0);
+                isDuplicated = true;
             }
             else {
                 socketClients[username] = socketClient;
@@ -102,7 +101,7 @@ void handleSocketConnection(int socketClient){
             sendMessage(std::string(receivedData));
         }
     }
-    if(ret == 0){
+    if(ret == 0 && !isDuplicated){
         std::string leave_msg;
         mtx.lock();
         if(socketClients.count(username) > 0) {
@@ -141,4 +140,10 @@ void removePattern(std::string& str, const std::string& pattern) {
     while ((pos = str.find(pattern, pos)) != std::string::npos) {
         str.erase(pos, pattern.length());
     }
+}
+
+void handleSignalCtrlZ(int signalID) {
+    print("----> Captured Signal: " + std::to_string(signalID));
+    close(::socketServer);
+    exit(0);
 }

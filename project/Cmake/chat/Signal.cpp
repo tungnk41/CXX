@@ -13,13 +13,13 @@ pid_t Signal::getProcessID() {
     return getpid();
 }
 
-void Signal::registerSignal(pid_t pid,int signalID, std::function<void(int)> callback) {
-    signal(signalID, signalHandler);
+void Signal::registerSignal(int signalID, __sighandler_t callback) {
+    signal(signalID, callback);
 }
 
 void Signal::run() {
     pid_t processID = getProcessID();
-    registerSignal(processID,SIGINT, signalHandler);
+    registerSignal(SIGINT, signalHandler);
 
     //Send to specific process
     // sendSignal(processID,SIGUSR1);

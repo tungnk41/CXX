@@ -14,7 +14,7 @@
     public:
        void sendSignal(pid_t pid, int signalID);
        pid_t getProcessID();
-       void registerSignal(pid_t pid,int signalID, std::function<void(int)> callback);
+       void registerSignal(int signalID, __sighandler_t callback);
        void run();
     };
 #endif

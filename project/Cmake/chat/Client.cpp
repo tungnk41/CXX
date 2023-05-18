@@ -15,8 +15,10 @@
 void sendMessage(int socket);
 void receiveMessage(int socket);
 void print(std::string msg);
+bool startsWith(const std::string& str, const std::string& prefix);
 
 std::string username = "user";
+int socketClient = -1;
 std::string message;
 
 int main(int argc,const char **argv,const char **envp){
@@ -35,7 +37,7 @@ int main(int argc,const char **argv,const char **envp){
     socketAddress.sin_port = htons(SERVER_PORT);
     
     if (connect(socketClient, (struct sockaddr*)&socketAddress, sizeof(socketAddress)) == -1){
-        print("Connect failed !");
+        print("Connect failed!");
     }
     std::string clientName = "[#]" + std::string(argv[1]);
     send(socketClient, clientName.c_str(), clientName.length() + 1, 0);
@@ -47,7 +49,6 @@ int main(int argc,const char **argv,const char **envp){
     receiver.join();
     
     close(socketClient);
-
     return 0;
 }
 
@@ -75,11 +76,24 @@ void receiveMessage(int socket){
             print("Connection is closed");
             exit(1);
         }
-        print(data);
+        if(startsWith(data,"[!]")) {
+            print("username already exists. Please quit and enter with another name!!");
+            exit(0);
+        }
+        else{
+            print(data);
+        }
     }
 }
 
 
 void print(std::string msg) {
     std::cout<<msg<<std::endl;
+}
+
+bool startsWith(const std::string& str, const std::string& prefix) {
+    if (str.length() < prefix.length()) {
+        return false;
+    }
+    return str.substr(0, prefix.length()) == prefix;
 }
