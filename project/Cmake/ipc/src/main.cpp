@@ -1,17 +1,12 @@
 #include <iostream>
-#include <string>
-#include <upipe.hpp>
-#include <pipe.hpp>
-#include <mq.hpp>
-#include <shm.hpp>
-#include <signal.hpp>
+#include <share_memory.hpp>
 
 using std::cout;
 using std::endl;
 
 int main() {
  
-  MessageQueue ipc;
+  posix::ShareMemory ipc;
   ipc.run();
 
   return 0;
