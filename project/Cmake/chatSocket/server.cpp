@@ -27,24 +27,32 @@ std::mutex mtx;
 std::unordered_map<std::string, int> socketClients;
 
 int main(int argc,const char **argv,const char **envp){
+
+    //Register signal to listen cancel process
     Signal sig;
     sig.registerSignal(SIGINT,handleSignalCtrlZ);
 
 
+    //Socket address
     struct sockaddr_in serverAddress, clientAddress;
     socklen_t clientAddress_size;
 
+    //create socket
     socketServer = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (socketServer == -1){
         print("create socket failed!");
         exit(1);
     }
+
+    //setup address and port
     memset(&serverAddress,0, sizeof(serverAddress));
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
     // serverAddress.sin_port=htons(atoi(argv[1]));
     serverAddress.sin_port = htons(SERVER_PORT);
 
+
+    //bind socket with address
     if (bind(socketServer, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1){
         print("bind failed!");
         print("Please run : netstat -tulpn | grep LISTEN ");
@@ -52,6 +60,8 @@ int main(int argc,const char **argv,const char **envp){
         exit(1);
     }
     printf("the server is running on port %d\n", SERVER_PORT);
+
+    //listen connection to socket
     if (listen(socketServer, MAX_CLIENT) == -1){
         print("listen failed");
         exit(1);

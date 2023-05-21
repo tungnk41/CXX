@@ -25,17 +25,19 @@ int main(int argc,const char **argv,const char **envp){
     struct sockaddr_in socketAddress;
 
     username = std::string(argv[1])+":";
-
+    //create socket
     int socketClient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (socketClient == -1){
         print("Init socket failed!");
     }
-
+    
+    //Setup address and port
     memset(&socketAddress, 0, sizeof(socketAddress));
     socketAddress.sin_family = AF_INET;
     socketAddress.sin_addr.s_addr = inet_addr(IP);
     socketAddress.sin_port = htons(SERVER_PORT);
     
+    //connect to server
     if (connect(socketClient, (struct sockaddr*)&socketAddress, sizeof(socketAddress)) == -1){
         print("Connect failed!");
     }
