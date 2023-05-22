@@ -8,68 +8,69 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define BUF_SIZE 1024
+#define BUFFER_SIZE 1024
 #define SERVER_PORT 5050
 #define IP "127.0.0.1"
 
 void sendMessage(int socket);
 void receiveMessage(int socket);
 void print(std::string msg);
-bool startsWith(const std::string& str, const std::string& prefix);
+bool isStartsWith(const std::string& str, const std::string& prefix);
 
 std::string username = "user";
-int socketClient = -1;
-std::string message;
 
 int main(int argc,const char **argv,const char **envp){
-    struct sockaddr_in socketAddress;
+    sockaddr_in client_address;
+    int socket_fd = -1;
+
 
     username = std::string(argv[1])+":";
     //create socket
-    int socketClient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (socketClient == -1){
+    int socket_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (socket_fd == -1){
         print("Init socket failed!");
     }
     
     //Setup address and port
-    memset(&socketAddress, 0, sizeof(socketAddress));
-    socketAddress.sin_family = AF_INET;
-    socketAddress.sin_addr.s_addr = inet_addr(IP);
-    socketAddress.sin_port = htons(SERVER_PORT);
+    memset(&client_address, 0, sizeof(client_address));
+    client_address.sin_family = AF_INET;
+    client_address.sin_addr.s_addr = inet_addr(IP);
+    client_address.sin_port = htons(SERVER_PORT);
     
     //connect to server
-    if (connect(socketClient, (struct sockaddr*)&socketAddress, sizeof(socketAddress)) == -1){
+    if (connect(socket_fd, (sockaddr*)&client_address, sizeof(client_address)) == -1){
         print("Connect failed!");
     }
-    std::string clientName = "[#]" + std::string(argv[1]);
-    send(socketClient, clientName.c_str(), clientName.length() + 1, 0);
+    std::string client_name = "[#]" + std::string(argv[1]);
+    send(socket_fd, client_name.c_str(), client_name.length(), 0);
     
-    std::thread sender(sendMessage, socketClient);
-    std::thread receiver(receiveMessage, socketClient);
+    std::thread sender(sendMessage, socket_fd);
+    std::thread receiver(receiveMessage, socket_fd);
     
     sender.join();
     receiver.join();
     
-    close(socketClient);
+    close(socket_fd);
     return 0;
 }
 
-void sendMessage(int socket){
+void sendMessage(int socket_fd){
+    std::string message;
     while(1){
         getline(std::cin, message);
         if (message == "quit"){
-            close(socket);
+            close(socket_fd);
             exit(0);
         }
         std::string data = username + " " + message;
-        send(socket, data.c_str(), data.length() + 1, 0);
+        send(socket_fd, data.c_str(), data.length(), 0);
     }
 }
 
-void receiveMessage(int socket){
-    char data[BUF_SIZE + username.length() + 1];
+void receiveMessage(int socket_fd){
+    char buffer[BUFFER_SIZE];
     while (1){
-        int ret = recv(socket, data, BUF_SIZE+username.length() + 1, 0); //length of message
+        int ret = recv(socket_fd, buffer, BUFFER_SIZE, 0); //length of message
         if (ret == -1){
             print("Connection is unsuccessful");
             exit(1);
@@ -78,12 +79,12 @@ void receiveMessage(int socket){
             print("Connection is closed");
             exit(1);
         }
-        if(startsWith(data,"[!]")) {
+        if(isStartsWith(buffer,"[!]")) {
             print("username already exists. Please quit and enter with another name!!");
             exit(0);
         }
         else{
-            print(data);
+            print(buffer);
         }
     }
 }
@@ -93,7 +94,7 @@ void print(std::string msg) {
     std::cout<<msg<<std::endl;
 }
 
-bool startsWith(const std::string& str, const std::string& prefix) {
+bool isStartsWith(const std::string& str, const std::string& prefix) {
     if (str.length() < prefix.length()) {
         return false;
     }

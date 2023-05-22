@@ -14,121 +14,120 @@
 #define BUFFER_SIZE 1024
 #define MAX_CLIENT 256    
 
-void handleSocketConnection(int socketClient);
+void handleSocketConnection(int socket_client_fd);
 void sendMessage(const std::string &msg);
 void print(std::string msg);
-bool startsWith(const std::string& str, const std::string& prefix);
+bool isStartsWith(const std::string& str, const std::string& prefix);
 void removePattern(std::string& str, const std::string& pattern);
-void handleSignalCtrlZ(int signalID);
+void handleSignalTerminate(int signal_id);
 
-int socketServer = -1;
-int totalClient = 0;
+int socket_server_fd = -1;
+int total_client = 0;
 std::mutex mtx;
-std::unordered_map<std::string, int> socketClients;
+std::unordered_map<std::string, int> socket_client_fds;
 
 int main(int argc,const char **argv,const char **envp){
 
     //Register signal to listen cancel process
     Signal sig;
-    sig.registerSignal(SIGINT,handleSignalCtrlZ);
+    sig.registerSignal(SIGINT,handleSignalTerminate);
 
 
     //Socket address
-    struct sockaddr_in serverAddress, clientAddress;
-    socklen_t clientAddress_size;
+    sockaddr_in server_address, client_address;
+
 
     //create socket
-    socketServer = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (socketServer == -1){
+    socket_server_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (socket_server_fd == -1){
         print("create socket failed!");
         exit(1);
     }
 
     //setup address and port
-    memset(&serverAddress,0, sizeof(serverAddress));
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-    // serverAddress.sin_port=htons(atoi(argv[1]));
-    serverAddress.sin_port = htons(SERVER_PORT);
+    memset(&server_address,0, sizeof(server_address));
+    server_address.sin_family = AF_INET;
+    server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+    // server_address.sin_port=htons(atoi(argv[1]));
+    server_address.sin_port = htons(SERVER_PORT);
 
 
     //bind socket with address
-    if (bind(socketServer, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1){
+    if (bind(socket_server_fd, (sockaddr*)&server_address, sizeof(server_address)) == -1){
         print("bind failed!");
-        print("Please run : netstat -tulpn | grep LISTEN ");
-        print("kill pid");
         exit(1);
     }
     printf("the server is running on port %d\n", SERVER_PORT);
 
     //listen connection to socket
-    if (listen(socketServer, MAX_CLIENT) == -1){
+    if (listen(socket_server_fd, MAX_CLIENT) == -1){
         print("listen failed");
         exit(1);
     }
 
-    while(1){  
-        clientAddress_size = sizeof(clientAddress);
-        int socketClient = accept(socketServer, (struct sockaddr*)&clientAddress, &clientAddress_size);
-        if (socketClient == -1){
+    socklen_t client_address_size;
+    while(1){
+        client_address_size = sizeof(client_address);  
+        int socket_client_fd = accept(socket_server_fd, (sockaddr*)&client_address, &client_address_size);
+        if (socket_client_fd == -1){
             print("accept failed!");
             exit(1);
         }
-        std::thread handler(handleSocketConnection, socketClient);
+        std::thread handler(handleSocketConnection, socket_client_fd);
         handler.detach();
     }
-    close(socketServer);
+    close(socket_server_fd);
     return 0;
 }
 
-void handleSocketConnection(int socketClient){
-    char msg[BUFFER_SIZE];
+void handleSocketConnection(int socket_client_fd){
+    char buffer[BUFFER_SIZE];
     std::string username = "";
     int ret = 0;
-    bool isDuplicated = false;
-    while((ret = recv(socketClient, msg, sizeof(msg),0)) != 0){
-        print(std::string("Received: ").append(msg));
-        std::string receivedData = std::string(msg);
-        if(startsWith(receivedData,"[#]")) {
-            removePattern(receivedData,"[#]");
-            username = receivedData;
-            if(socketClients.count(username) > 0){
+    bool is_duplicated = false;
+    while((ret = recv(socket_client_fd, buffer, sizeof(buffer),0)) != 0){
+        print(std::string("Received: ").append(buffer));
+        std::string received_data = std::string(buffer);
+        if(isStartsWith(received_data,"[#]")) {
+            removePattern(received_data,"[#]");
+            username = received_data;
+            if(socket_client_fds.count(username) > 0){
                 std::string error_msg = "[!]";
-                send(socketClient, error_msg.c_str(), error_msg.length()+1, 0);
-                isDuplicated = true;
+                send(socket_client_fd, error_msg.c_str(), error_msg.length()+1, 0);
+                is_duplicated = true;
             }
             else {
-                socketClients[username] = socketClient;
+                socket_client_fds[username] = socket_client_fd;
                 std::string msg = username + " joined!";
                 mtx.lock();
-                totalClient++;
+                total_client++;
                 mtx.unlock();
                 sendMessage(msg);
             }
         }
         else {
-            sendMessage(std::string(receivedData));
+            sendMessage(received_data);
         }
     }
-    if(ret == 0 && !isDuplicated){
+    if(ret == 0 && !is_duplicated){
         std::string leave_msg;
         mtx.lock();
-        if(socketClients.count(username) > 0) {
-            socketClients.erase(username);
+        if(socket_client_fds.count(username) > 0) {
+            socket_client_fds.erase(username);
         }
         mtx.unlock();
         leave_msg = username + " has left the chat room";
         sendMessage(leave_msg);
-        close(socketClient);
+        close(socket_client_fd);
     }
     else {
-        close(socketClient);
+        close(socket_client_fd);
     }
 }
 
 void sendMessage(const std::string &msg){
     print(msg);
-    for (auto const& it : socketClients) {
+    for (auto const& it : socket_client_fds) {
         send(it.second, msg.c_str(), msg.length()+1, 0);
     }
 }
@@ -137,7 +136,7 @@ void print(std::string msg) {
     std::cout <<"Server --->> " << msg << std::endl;
 }
 
-bool startsWith(const std::string& str, const std::string& prefix) {
+bool isStartsWith(const std::string& str, const std::string& prefix) {
     if (str.length() < prefix.length()) {
         return false;
     }
@@ -151,8 +150,8 @@ void removePattern(std::string& str, const std::string& pattern) {
     }
 }
 
-void handleSignalCtrlZ(int signalID) {
-    print("Captured Signal: " + std::to_string(signalID));
-    close(::socketServer);
+void handleSignalTerminate(int signal_id) {
+    print("Captured Signal: " + std::to_string(signal_id));
+    close(::socket_server_fd);
     exit(0);
 }
