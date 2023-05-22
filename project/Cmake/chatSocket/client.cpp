@@ -8,12 +8,12 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 256
 #define SERVER_PORT 5050
 #define IP "127.0.0.1"
 
-void sendMessage(int socket);
-void receiveMessage(int socket);
+void sendMessage(int socket_fd);
+void receiveMessage(int socket_fd);
 void print(std::string msg);
 bool isStartsWith(const std::string& str, const std::string& prefix);
 
@@ -21,8 +21,6 @@ std::string username = "user";
 
 int main(int argc,const char **argv,const char **envp){
     sockaddr_in client_address;
-    int socket_fd = -1;
-
 
     username = std::string(argv[1])+":";
     //create socket
@@ -70,7 +68,8 @@ void sendMessage(int socket_fd){
 void receiveMessage(int socket_fd){
     char buffer[BUFFER_SIZE];
     while (1){
-        int ret = recv(socket_fd, buffer, BUFFER_SIZE, 0); //length of message
+      
+        int ret = recv(socket_fd, buffer, sizeof(buffer), 0); //length of message
         if (ret == -1){
             print("Connection is unsuccessful");
             exit(1);
@@ -86,6 +85,7 @@ void receiveMessage(int socket_fd){
         else{
             print(buffer);
         }
+        memset(buffer,0,sizeof(buffer));
     }
 }
 

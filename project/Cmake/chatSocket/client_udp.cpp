@@ -30,11 +30,10 @@ int main(int argc, char const *argv[]) {
     while(1){
         std::string input;
         getline(std::cin, input);
-     
         sendto(socket_fd, input.c_str(), input.length(),
             0, (const sockaddr *) &server_address, 
             sizeof(server_address));
-         
+        memset(buffer,0,sizeof(buffer));
         recvfrom(socket_fd, buffer, sizeof(buffer), 
                 0, (struct sockaddr *) &server_address,&server_address_size);
         std::cout<<"response from server: " << buffer<<std::endl;

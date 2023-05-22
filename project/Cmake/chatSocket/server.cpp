@@ -11,7 +11,7 @@
 
 
 #define SERVER_PORT 5050 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 256
 #define MAX_CLIENT 256    
 
 void handleSocketConnection(int socket_client_fd);
@@ -42,6 +42,13 @@ int main(int argc,const char **argv,const char **envp){
     if (socket_server_fd == -1){
         print("create socket failed!");
         exit(1);
+    }
+
+    int optval = 1;
+    if (setsockopt(socket_server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0) {
+        std::cerr << "Failed to set SO_REUSEADDR option" << std::endl;
+        close(socket_server_fd);
+        return 1;
     }
 
     //setup address and port
@@ -108,6 +115,7 @@ void handleSocketConnection(int socket_client_fd){
         else {
             sendMessage(received_data);
         }
+        memset(buffer,0,sizeof(buffer));
     }
     if(ret == 0 && !is_duplicated){
         std::string leave_msg;
@@ -128,7 +136,7 @@ void handleSocketConnection(int socket_client_fd){
 void sendMessage(const std::string &msg){
     print(msg);
     for (auto const& it : socket_client_fds) {
-        send(it.second, msg.c_str(), msg.length()+1, 0);
+        send(it.second, msg.c_str(), msg.length(), 0);
     }
 }
 

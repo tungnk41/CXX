@@ -9,8 +9,8 @@
 #include <sys/un.h>
 
 //socket file
-#define CLIENT_SOCK_FILE "client.sock"
-#define SERVER_SOCK_FILE "server.sock"
+#define CLIENT_SOCK_FILE "build/client.sock"
+#define SERVER_SOCK_FILE "build/server.sock"
 #define BUFFER_SIZE 255
 #define PORT 5050
 char buffer[BUFFER_SIZE];
@@ -28,7 +28,6 @@ int main(int argc, char const *argv[]) {
     memset(&server_address, 0, sizeof(server_address));
     memset(&client_address, 0, sizeof(client_address));
     client_address.sun_family = AF_UNIX;
-    #define SERVER_SOCK_FILE "server.sock"
     strcpy(client_address.sun_path, CLIENT_SOCK_FILE);
     unlink(CLIENT_SOCK_FILE);
     bind(socket_fd, (struct sockaddr *)&client_address, sizeof(client_address));
@@ -45,6 +44,7 @@ int main(int argc, char const *argv[]) {
         sendto(socket_fd, input.c_str(), input.length(),
             0, (const sockaddr *) &server_address, 
             sizeof(server_address));
+        memset(buffer,0,sizeof(buffer));
         recvfrom(socket_fd, buffer, sizeof(buffer), 
                 0, (struct sockaddr *) &server_address,
                 &server_address_size);

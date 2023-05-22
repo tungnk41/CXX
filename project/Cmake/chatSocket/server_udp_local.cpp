@@ -11,7 +11,7 @@
 
 #define BUFFER_SIZE 255
 #define PORT 5050
-#define SERVER_SOCK_FILE "server.sock"
+#define SERVER_SOCK_FILE "build/server.sock"
 char buffer[BUFFER_SIZE];
 
 int main(int argc, char const *argv[])
@@ -36,6 +36,7 @@ int main(int argc, char const *argv[])
 
     socklen_t client_address_size = sizeof(client_address);
     while(1){
+        memset(buffer,0,sizeof(buffer));
         recvfrom(socket_fd, buffer, sizeof(buffer), 0, (struct sockaddr *) &client_address, &client_address_size);                                                
         sendto(socket_fd, buffer, sizeof(buffer), 
         0, (const sockaddr *) &client_address,client_address_size);
