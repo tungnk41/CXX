@@ -1,4 +1,4 @@
-@startuml Sequence Diagram
+@startuml Led Pattern Control
 participant Apps_Services
 participant HMIManager
 participant HMIManagerService
@@ -31,35 +31,35 @@ else MODE IGNORE
     deactivate HMIManager
     deactivate Apps_Services
 else MODE HOLD
+    activate HMIVariantImpl
     HMIVariantImpl -> HMIVariantImpl: std::priority_queue::push(std::share_ptr<hmi_toy24_led_pattern>)
     note left: Push patternInfo to priorityQueue
-    activate HMIVariantImpl
     activate HMIManagerService
     HMIVariantImpl --> HMIManagerService: E_OK()
+    deactivate HMIVariantImpl
     activate HMIManager
     HMIManagerService --> HMIManager: E_OK()
+    deactivate HMIManagerService
     activate Apps_Services
     HMIManager --> Apps_Services: E_OK()
-    deactivate Apps_Services
     deactivate HMIManager
-    deactivate HMIManagerService
-    deactivate HMIVariantImpl
+    deactivate Apps_Services
 else MODE APPLY
-    HMIVariantImpl -> HMIVariantImpl: requestControlLedPattern(): error_t
     activate HMIVariantImpl
+    HMIVariantImpl -> HMIVariantImpl: requestControlLedPattern(): error_t
     HMIVariantImpl -> HMIVariantImpl: hmiSendData(android::sp<CommunicationData>&): error_t
     activate ICommunicationManagerService
     HMIVariantImpl -> ICommunicationManagerService : sendDataToMcu(android::sp<CommunicationData>&): error_t
     activate commReceiver
     ICommunicationManagerService --> commReceiver: onReceive(android::sp<CommunicationData>&): error_t
+    deactivate ICommunicationManagerService
     activate HMIVariantImplHandler
     commReceiver --> HMIVariantImplHandler: handleMessage(MSG_ON_HAL_RECEIVED)
+    deactivate commReceiver
     HMIVariantImplHandler --> HMIVariantImpl: onCommReceive(android::sp<CommunicationData>&)
     note left: Receiver MCU response
-    deactivate HMIVariantImpl
-    deactivate ICommunicationManagerService
-    deactivate commReceiver
     deactivate HMIVariantImplHandler
+    deactivate HMIVariantImpl
 end
 |||
 
