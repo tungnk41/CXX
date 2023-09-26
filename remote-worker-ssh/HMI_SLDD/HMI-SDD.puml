@@ -21,28 +21,46 @@ HMIManagerService -> HMIVariantImpl: setLEDOn(const uint32_t): error_t
 activate HMIVariantImpl
 HMIVariantImpl -> HMIVariantImpl: createPatternInfo(uint32_t): std::shared_ptr<hmi_toy24_led_pattern>
 
-alt#Gold #LightBlue MODE IGNORE
+alt applyMode
+else MODE IGNORE
     HMIVariantImpl --> HMIManagerService: E_RROR()
+    deactivate HMIVariantImpl
     HMIManagerService --> HMIManager: E_RROR()
+    deactivate HMIManagerService
     HMIManager --> Apps_Services: E_RROR()
-else #Gold #LightBlue MODE HOLD
+    deactivate HMIManager
+    deactivate Apps_Services
+else MODE HOLD
+    HMIVariantImpl -> HMIVariantImpl: std::priority_queue::push(std::share_ptr<hmi_toy24_led_pattern>)
+    note left: Push patternInfo to priorityQueue
+    activate HMIVariantImpl
+    activate HMIManagerService
+    HMIVariantImpl --> HMIManagerService: E_OK()
+    activate HMIManager
+    HMIManagerService --> HMIManager: E_OK()
+    activate Apps_Services
+    HMIManager --> Apps_Services: E_OK()
     deactivate Apps_Services
     deactivate HMIManager
     deactivate HMIManagerService
     deactivate HMIVariantImpl
-
+else MODE APPLY
+    HMIVariantImpl -> HMIVariantImpl: requestControlLedPattern(): error_t
     activate HMIVariantImpl
-    HMIVariantImpl -> HMIVariantImpl: std::priority_queue::push(std::share_ptr<hmi_toy24_led_pattern>)
-    activate HMIManagerService
-    HMIVariantImpl --> HMIManagerService: E_OK()
-    activate HMIManagerService
-    HMIManagerService --> HMIManagerService: E_OK()
-
-else #Gold #LightBlue MODE APPLY
-    HMIVariantImpl -> HMIVariantImpl: createPatternInfo(uint32_t): std::shared_ptr<hmi_toy24_led_pattern>
-    
-else #Pink Failure
-  
+    HMIVariantImpl -> HMIVariantImpl: hmiSendData(android::sp<CommunicationData>&): error_t
+    activate ICommunicationManagerService
+    HMIVariantImpl -> ICommunicationManagerService : sendDataToMcu(android::sp<CommunicationData>&): error_t
+    activate commReceiver
+    ICommunicationManagerService --> commReceiver: onReceive(android::sp<CommunicationData>&): error_t
+    activate HMIVariantImplHandler
+    commReceiver --> HMIVariantImplHandler: handleMessage(MSG_ON_HAL_RECEIVED)
+    HMIVariantImplHandler --> HMIVariantImpl: onCommReceive(android::sp<CommunicationData>&)
+    note left: Receiver MCU response
+    deactivate HMIVariantImpl
+    deactivate ICommunicationManagerService
+    deactivate commReceiver
+    deactivate HMIVariantImplHandler
 end
+|||
 
 @enduml
