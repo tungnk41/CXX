@@ -1,0 +1,48 @@
+@startuml Sequence Diagram
+participant Apps_Services
+participant HMIManager
+participant HMIManagerService
+participant HMI_Variant_Observer
+participant HMIVariantImpl
+participant HMIVariantImplHandler
+participant commReceiver
+participant ICommunicationManagerService
+
+activate Apps_Services
+Apps_Services -> HMIManager: setLedOnOff(const uint32_t, const bool): error_t
+note left: 1 byte: PatternID\n1 byte: requestID\n[SET/REMOVE]\n2 bytes : handlerID
+
+activate HMIManager
+HMIManager -> HMIManagerService: setLedOnOff(const uint32_t, const bool): error_t
+
+activate HMIManagerService
+HMIManagerService -> HMIVariantImpl: setLEDOn(const uint32_t): error_t
+
+activate HMIVariantImpl
+HMIVariantImpl -> HMIVariantImpl: createPatternInfo(uint32_t): std::shared_ptr<hmi_toy24_led_pattern>
+
+alt#Gold #LightBlue MODE IGNORE
+    HMIVariantImpl --> HMIManagerService: E_RROR()
+    HMIManagerService --> HMIManager: E_RROR()
+    HMIManager --> Apps_Services: E_RROR()
+else #Gold #LightBlue MODE HOLD
+    deactivate Apps_Services
+    deactivate HMIManager
+    deactivate HMIManagerService
+    deactivate HMIVariantImpl
+
+    activate HMIVariantImpl
+    HMIVariantImpl -> HMIVariantImpl: std::priority_queue::push(std::share_ptr<hmi_toy24_led_pattern>)
+    activate HMIManagerService
+    HMIVariantImpl --> HMIManagerService: E_OK()
+    activate HMIManagerService
+    HMIManagerService --> HMIManagerService: E_OK()
+
+else #Gold #LightBlue MODE APPLY
+    HMIVariantImpl -> HMIVariantImpl: createPatternInfo(uint32_t): std::shared_ptr<hmi_toy24_led_pattern>
+    
+else #Pink Failure
+  
+end
+
+@enduml
