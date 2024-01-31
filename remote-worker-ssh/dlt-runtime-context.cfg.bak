@@ -1,0 +1,38 @@
+SYS:MGR:3:-1:Context of main dlt system manager:    
+SYS:SYSL:3:-1:SYSLOG Adapter:                       
+ROUT:ROUT:4:-1:RouteManagerService:                 
+HMI:HMI:4:-1:HMIManagerService:                     
+POWR:POWR:4:-1:PowerManagerService:                 
+ANTN:ANTN:4:-1:AntennaManagerServicee:              
+HEAL:HEAL:4:-1:HealthManagerService:                
+EREG:EREG:4:-1:ECallDCMRegulation:                  
+ENRE:ENRE:4:-1:ECallDCMNonRegulation:               
+TIME:TIME:4:-1:TimeManagerService:                  
+ALAR:ALAR:4:-1:AlarmManagerService:                 
+TELE:TELE:4:-1:TelephonyManagerService:             
+CONF:CONF:4:-1:ConfigurationManagerService:         
+PROV:PROV:4:-1:TSP Provisioning:                    
+VLS:VLS:4:-1:Vehicle Location Service:              
+CUST:CUST:4:-1:Customer Account Management:         
+DHC:DHC:4:-1:DCM Health Check:                      
+TAA:TAA:4:-1:Tow Away Alert:                        
+NEV:NEV:4:-1:China NEV:                             
+SMSM:SMSM:4:-1:SMSManagerService:                   
+EJSON:EJSON:4:-1:EmlJsonManagerService:             
+ASEC:ASEC:4:-1:AppSecurityManagerService:           
+HTTP:HTTP:4:-1:HTTPManagerService:                  
+PPI:PPI:4:-1:PPIManagerService:                     
+LOCH:Nmea:4:-1:NMEA information:                    
+LOCH:Posi:4:-1:Position information:                
+LOCH:Sate:4:-1:satellite information:               
+LOCH:Info:4:-1:Etc GNSS information:                
+DIAG:DIAG:4:-1:DiagManagerService:                  
+STAD:STAD:4:-1:startd:                              
+WIFD:WIFD:4:-1:WifiDiagService:                     
+WPA:WPA:4:-1:wpa_supplicant:                        
+DIAG:AED:4:-1:AEDManagerService:                    
+LOCT:LOCT:4:-1:LocationManagerService:              
+VCAL:VCAL:4:-1:voice call app:                      
+VCMG:VCMG:4:-1:vcall service:                       
+IDS:IDS:4:-1:IDSManagerService:                     
+VSIP:VSIP:4:-1:VSOMEIP:
